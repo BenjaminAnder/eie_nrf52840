@@ -1,0 +1,20 @@
+git commit (-m <message>)
+    create snapshot
+git branch <name>
+    create a branch with name
+git checkout (-b *create branch with name*) <branch name>
+    change active to branch
+git pull
+    get recent updates from github repo
+git push (-u <branch name> *needed for new branch*) 
+    push recent update to githup repo
+git merge
+    merge branch with previous
+git rebase
+    merge commits from different branch
+git fetch
+    get commits from different branch
+git add
+git status
+git log
+git diff
