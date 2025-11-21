@@ -20,6 +20,7 @@
 #include <zephyr/sys/printk.h>
 
 #include <LED.h>
+#include <BTN.h>
 
 /* MACROS --------------------------------------------------------------------------------------- */
 
@@ -54,7 +55,7 @@ static const struct bt_data ble_scan_response_data[] = {
 };
 
 static uint8_t ble_custom_characteristic_user_data[BLE_CUSTOM_CHARACTERISTIC_MAX_DATA_LENGTH + 1] =
-    {'E', 'i', 'E'};
+    {'O', 'F', 'F'};
 
 /* BLE SERVICE SETUP ---------------------------------------------------------------------------- */
 
@@ -119,18 +120,29 @@ static ssize_t ble_custom_service_write(struct bt_conn* conn, const struct bt_ga
     printk("%s %02X '%c'", i == 0 ? "" : ",", value[offset + i], value[offset + i]);
   }
   printk("\n");
-  if (turn_on && len == 6)
+  if (turn_on && len == 6) {
     LED_set(LED0, 1);
-  if (turn_off && len == 7)
+    ble_custom_characteristic_user_data[0] = 'O';
+    ble_custom_characteristic_user_data[1] = 'N';
+    ble_custom_characteristic_user_data[2] = '\0';
+  }
+    
+
+  if (turn_off && len == 7) {
     LED_set(LED0, 0);
+    
+    ble_custom_characteristic_user_data[0] = 'O';
+    ble_custom_characteristic_user_data[1] = 'F';
+    ble_custom_characteristic_user_data[2] = 'F';
+  }
 
   return len;
 }
 
-static void ble_custom_service_notify() {
+static void ble_custom_service_notify(int8_t dir) {
   static uint32_t counter = 0;
   bt_gatt_notify(NULL, &ble_custom_service.attrs[2], &counter, sizeof(counter));
-  counter++;
+  counter += dir;
 }
 
 /* MAIN ----------------------------------------------------------------------------------------- */
@@ -153,9 +165,14 @@ int main(void) {
   }
 
   LED_init(LED1);
+  BTN_init(BTN0);
+
+  int8_t dir = 1;
 
   while (1) {
     k_sleep(K_MSEC(1000));
-    ble_custom_service_notify();
+    ble_custom_service_notify(dir);
+    if (BTN_check_clear_pressed(BTN0))
+      dir *= -1;
   }
 }
