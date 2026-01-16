@@ -33,9 +33,9 @@
 // #define CHARACTERISTIC BT_UUID_DECLARE_128(BLE_CUSTOM_CHARACTERISTIC_UUID)
 
 static struct bt_uuid_128 BLE_CUSTOM_SERVICE_UUID =
-    BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x11111111, 0x1111, 0x1111, 0x1111, 0x111111111111));
+    BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x11111111, 0x2222, 0x3333, 0x4444, 0x000000000001));
 static struct bt_uuid_128 BLE_CUSTOM_CHARACTERISTIC_UUID =
-    BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x11111111, 0x1111, 0x1111, 0x1111, 0x111111111112));
+    BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x11111111, 0x2222, 0x3333, 0x4444, 0x000000000002));
 
 /* PROTOTYPES ----------------------------------------------------------------------------------- */
 
@@ -87,7 +87,7 @@ static void ble_on_advertisement_received(const bt_addr_le_t* addr, int8_t rssi,
   printk("Device found: %s (RSSI %d) - '%s'\n", addr_str, rssi, name);
 
   /* connect only to devices in close proximity */
-  if (rssi < -40) {
+  if (rssi < -50) {
     return;
   }
 
@@ -257,6 +257,8 @@ int main(void) {
   } else {
     printk("Bluetooth initialized\n");
   }
+
+  // bt_le_scan_start(BT_LE_SCAN_PASSIVE, ble_on_advertisement_received);
 
   ble_start_scanning();
 
